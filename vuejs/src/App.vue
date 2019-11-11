@@ -16,7 +16,7 @@
             <div class="card">
               <div class="card-body">
                 <ul class="list-group">
-                  <li class="list-group-item" v-for="prefix in prefixes" v-bind:key="prefix">
+                  <li class="list-group-item" v-for="prefix in prefixes" :key="prefix">
                     <div class="row">
                       <div class="col-md">{{ prefix }}</div>
                       <div class="col-md text-right">
@@ -53,7 +53,7 @@
             <div class="card">
               <div class="card-body">
                 <ul class="list-group">
-                  <li class="list-group-item" v-for="sufix in sufixes" v-bind:key="sufix">
+                  <li class="list-group-item" v-for="sufix in sufixes" :key="sufix">
                     <div class="row">
                       <div class="col-md">{{ sufix }}</div>
                       <div class="col-md text-right">
@@ -91,7 +91,16 @@
         <div class="card">
           <div class="card-body">
             <ul class="list-group">
-              <li class="list-group-item" v-for="domain in domains" v-bind:key="domain">{{ domain }}</li>
+              <li class="list-group-item" v-for="domain in domains" :key="domain.name">
+                <div class="row">
+                  <div class="col-md">{{ domain.name }}</div>
+                  <div class="col-md text-right">
+                    <a class="btn btn-info" :href="domain.checkout" target="_blank">
+                      <span class="fa fa-shopping-cart"></span>
+                    </a>
+                  </div>
+                </div>
+              </li>
             </ul>
           </div>
         </div>
@@ -111,24 +120,52 @@ export default {
       prefix: "",
       sufix: "",
       prefixes: ["Air", "Jet", "Flight"],
+<<<<<<< HEAD
+      sufixes: ["Hub", "Station", "Mart"]
+=======
       sufixes: ["Hub", "Station", "Mart"],
+      domains: [
+        "AirHub",
+        "AirStation",
+        "AirMart",
+        "JetHub",
+        "JetStation",
+        "JetMart",
+        "FlightHub",
+        "FlightStation",
+        "FlightMart"
+      ]
+>>>>>>> parent of c16a332... computed domains e no-console
     };
   },
   methods: {
     addPrefix(prefix) {
       this.prefixes.push(prefix);
       this.prefix = "";
+      this.generate();
     },
     addSufix(sufix) {
       this.sufixes.push(sufix);
       this.sufix = "";
+      this.generate();
+    },
+    generate() {
+      this.domains = [];
+      for (const prefix of this.prefixes) {
+        for (const sufix of this.sufixes) {
+          this.domains.push(prefix + sufix);
+        }
+      }
     },
     deletePrefix(prefix) {
       this.prefixes.splice(this.prefixes.indexOf(prefix), 1);
+      this.generate();
     },
     deleteSufix(sufix) {
       this.sufixes.splice(this.sufixes.indexOf(sufix), 1);
+      this.generate();
     }
+<<<<<<< HEAD
   },
   computed: {
     domains() {
@@ -136,12 +173,20 @@ export default {
       const domains = [];
       for (const prefix of this.prefixes) {
         for (const sufix of this.sufixes) {
-          domains.push(prefix + sufix);
+          const name = prefix + sufix;
+          const url = name.toLowerCase();
+          const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.com.br`;
+          domains.push({
+            name,
+            checkout
+          });
         }
       }
       return domains;
     }
-  },
+=======
+>>>>>>> parent of c16a332... computed domains e no-console
+  }
 };
 </script>
 
