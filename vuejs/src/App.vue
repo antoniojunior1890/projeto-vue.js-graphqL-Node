@@ -120,22 +120,7 @@ export default {
       prefix: "",
       sufix: "",
       prefixes: ["Air", "Jet", "Flight"],
-<<<<<<< HEAD
       sufixes: ["Hub", "Station", "Mart"]
-=======
-      sufixes: ["Hub", "Station", "Mart"],
-      domains: [
-        "AirHub",
-        "AirStation",
-        "AirMart",
-        "JetHub",
-        "JetStation",
-        "JetMart",
-        "FlightHub",
-        "FlightStation",
-        "FlightMart"
-      ]
->>>>>>> parent of c16a332... computed domains e no-console
     };
   },
   methods: {
@@ -165,7 +150,6 @@ export default {
       this.sufixes.splice(this.sufixes.indexOf(sufix), 1);
       this.generate();
     }
-<<<<<<< HEAD
   },
   computed: {
     domains() {
@@ -184,8 +168,6 @@ export default {
       }
       return domains;
     }
-=======
->>>>>>> parent of c16a332... computed domains e no-console
   }
 };
 </script>
