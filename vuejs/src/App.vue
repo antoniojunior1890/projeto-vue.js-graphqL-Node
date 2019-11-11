@@ -112,47 +112,36 @@ export default {
       sufix: "",
       prefixes: ["Air", "Jet", "Flight"],
       sufixes: ["Hub", "Station", "Mart"],
-      domains: [
-        "AirHub",
-        "AirStation",
-        "AirMart",
-        "JetHub",
-        "JetStation",
-        "JetMart",
-        "FlightHub",
-        "FlightStation",
-        "FlightMart"
-      ]
     };
   },
   methods: {
     addPrefix(prefix) {
       this.prefixes.push(prefix);
       this.prefix = "";
-      this.generate();
     },
     addSufix(sufix) {
       this.sufixes.push(sufix);
       this.sufix = "";
-      this.generate();
-    },
-    generate() {
-      this.domains = [];
-      for (const prefix of this.prefixes) {
-        for (const sufix of this.sufixes) {
-          this.domains.push(prefix + sufix);
-        }
-      }
     },
     deletePrefix(prefix) {
       this.prefixes.splice(this.prefixes.indexOf(prefix), 1);
-      this.generate();
     },
     deleteSufix(sufix) {
       this.sufixes.splice(this.sufixes.indexOf(sufix), 1);
-      this.generate();
     }
-  }
+  },
+  computed: {
+    domains() {
+      console.log("gerando domains..");
+      const domains = [];
+      for (const prefix of this.prefixes) {
+        for (const sufix of this.sufixes) {
+          domains.push(prefix + sufix);
+        }
+      }
+      return domains;
+    }
+  },
 };
 </script>
 
