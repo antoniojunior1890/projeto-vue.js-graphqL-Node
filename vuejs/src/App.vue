@@ -9,78 +9,10 @@
       <div class="container">
         <div class="row">
           <div class="col-md">
-            <h5>
-              Prefixos
-              <span class="badge badge-info">{{ prefixes.length }}</span>
-            </h5>
-            <div class="card">
-              <div class="card-body">
-                <ul class="list-group">
-                  <li class="list-group-item" v-for="prefix in prefixes" :key="prefix">
-                    <div class="row">
-                      <div class="col-md">{{ prefix }}</div>
-                      <div class="col-md text-right">
-                        <button class="btn btn-info" @click="deletePrefix(prefix)">
-                          <span class="fa fa-trash"></span>
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-                <br />
-                <div class="input-group">
-                  <input
-                    type="text"
-                    class="form-control"
-                    v-model="prefix"
-                    placeholder="Digite o prefixo"
-                    v-on:keyup.enter="addPrefix(prefix)"
-                  />
-                  <div class="input-group-append">
-                    <button class="btn btn-info" @click="addPrefix(prefix)">
-                      <span class="fa fa-plus"></span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <AppItemList title="Prefixos" v-bind:items="prefixes" v-on:addItem="addPrefix" v-on:deleteItem="deletePrefix"/>
           </div>
           <div class="col-md">
-            <h5>
-              Sufixos
-              <span class="badge badge-info">{{ sufixes.length }}</span>
-            </h5>
-            <div class="card">
-              <div class="card-body">
-                <ul class="list-group">
-                  <li class="list-group-item" v-for="sufix in sufixes" :key="sufix">
-                    <div class="row">
-                      <div class="col-md">{{ sufix }}</div>
-                      <div class="col-md text-right">
-                        <button class="btn btn-info" @click="deleteSufix(sufix)">
-                          <span class="fa fa-trash"></span>
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-                <br />
-                <div class="input-group">
-                  <input
-                    type="text"
-                    class="form-control"
-                    v-model="sufix"
-                    placeholder="Digite o sufixo"
-                    v-on:keyup.enter="addSufix(sufix)"
-                  />
-                  <div class="input-group-append">
-                    <button class="btn btn-info" @click="addSufix(sufix)">
-                      <span class="fa fa-plus"></span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <AppItemList title="Sufixos" v-bind:items="sufixes" v-on:addItem="addSufix" v-on:deleteItem="deleteSufix"/>
           </div>
         </div>
         <br />
@@ -112,13 +44,15 @@
 <script>
 import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.css";
+import AppItemList from "./components/AppItemList";
 
 export default {
   name: "app",
+  components: {
+    AppItemList
+  },
   data() {
     return {
-      prefix: "",
-      sufix: "",
       prefixes: ["Air", "Jet", "Flight"],
       sufixes: ["Hub", "Station", "Mart"]
     };
@@ -126,13 +60,9 @@ export default {
   methods: {
     addPrefix(prefix) {
       this.prefixes.push(prefix);
-      this.prefix = "";
-      this.generate();
     },
     addSufix(sufix) {
       this.sufixes.push(sufix);
-      this.sufix = "";
-      this.generate();
     },
     generate() {
       this.domains = [];
@@ -144,11 +74,9 @@ export default {
     },
     deletePrefix(prefix) {
       this.prefixes.splice(this.prefixes.indexOf(prefix), 1);
-      this.generate();
     },
     deleteSufix(sufix) {
       this.sufixes.splice(this.sufixes.indexOf(sufix), 1);
-      this.generate();
     }
   },
   computed: {
