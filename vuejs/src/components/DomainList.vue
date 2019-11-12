@@ -62,7 +62,8 @@ export default {
       items: {
         prefix: [],
         suffix: []
-      }
+      },
+      domains: []
     };
   },
   methods: {
@@ -88,15 +89,8 @@ export default {
         const query = response.data;
         const newItem = query.data.newItem;
         this.items[item.type].push(newItem);
+        this.generateDomains();
       });
-    },
-    generate() {
-      this.domains = [];
-      for (const prefix of this.prefixes) {
-        for (const suffix of this.suffixes) {
-          this.domains.push(prefix + suffix);
-        }
-      }
     },
     deleteItem(item) {
       axios({
@@ -113,11 +107,12 @@ export default {
           }
         }
       }).then(() => {
-        this.getItems(item.type);
+        this.items[item.type].splice(this.items[item.type].indexOf(item), 1);
+        this.generateDomains();
       });
     },
     getItems(type) {
-      axios({
+      return axios({
         url: "http://localhost:4000",
         method: "post",
         data: {
@@ -138,29 +133,29 @@ export default {
         const query = response.data;
         this.items[type] = query.data.items;
       });
-    }
-  },
-  computed: {
-    domains() {
-      console.log("gerando domains..");
-      const domains = [];
+    },
+    generateDomains(){
+      this.domains = [];
       for (const prefix of this.items.prefix) {
         for (const suffix of this.items.suffix) {
           const name = prefix.description + suffix.description;
           const url = name.toLowerCase();
           const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.com.br`;
-          domains.push({
+          this.domains.push({
             name,
             checkout
           });
         }
       }
-      return domains;
     }
   },
   created() {
-    this.getItems("prefix");
-    this.getItems("suffix");
+    Promise.all([
+      this.getItems("prefix"),
+      this.getItems("suffix")
+    ]).then(() => {
+      this.generateDomains();
+    });
   }
 };
 </script>
