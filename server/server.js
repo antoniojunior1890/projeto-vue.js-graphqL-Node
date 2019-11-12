@@ -13,6 +13,7 @@ const typeDefs = `
 
     type Mutation {
         saveItem (item: ItemInput): Item
+        deleteItem (id: Int): Boolean
     }
 
     input ItemInput {
@@ -22,12 +23,12 @@ const typeDefs = `
 `;
 
 const items = [
-    { id: 1, type: "prefix", description: "Air"},
-    { id: 2, type: "prefix", description: "Jet"},
-    { id: 3, type: "prefix", description: "Fligt"},
-    { id: 4, type: "sufix", description: "Hub"},
-    { id: 5, type: "sufix", description: "Station"},
-    { id: 6, type: "sufix", description: "Mart"},
+    { id: 1, type: "prefix", description: "Air" },
+    { id: 2, type: "prefix", description: "Jet" },
+    { id: 3, type: "prefix", description: "Fligt" },
+    { id: 4, type: "sufix", description: "Hub" },
+    { id: 5, type: "sufix", description: "Station" },
+    { id: 6, type: "sufix", description: "Mart" },
 ];
 
 const resolvers = {
@@ -37,11 +38,18 @@ const resolvers = {
         },
     },
     Mutation: {
-        saveItem(_, args){
+        saveItem(_, args) {
             const item = args.item;
             item.id = Math.floor(Math.random() * 1000);
             items.push(item);
             return item;
+        },
+        deleteItem(_, args) {
+            const id = args.id;
+            const item = items.find(item => item.id === id)
+            if (!item) return false;
+            items.splice(items.indexOf(item), 1);
+            return true;
         }
     }
 
