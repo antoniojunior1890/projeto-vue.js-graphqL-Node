@@ -63,7 +63,31 @@ export default {
   },
   methods: {
     addPrefix(prefix) {
-      this.prefixes.push(prefix);
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+            mutation ($item: ItemInput) {
+              newPrefix: saveItem(item: $item) {
+                id
+                type
+                description
+              }
+            }
+          `,
+          variables: {
+            item: {
+              type: "prefix",
+              description: prefix
+            }
+          }
+        }
+      }).then(response => {
+        const query = response.data;
+        const newPrefix = query.data.newPrefix;
+        this.prefixes.push(newPrefix.description);
+      });
     },
     addSufix(sufix) {
       this.sufixes.push(sufix);
@@ -81,6 +105,45 @@ export default {
     },
     deleteSufix(sufix) {
       this.sufixes.splice(this.sufixes.indexOf(sufix), 1);
+    },
+    getPrefixes() {
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+          {
+            prefixes: items (type: "prefix") {
+              id
+              type
+              description
+            }
+          }
+        `
+        }
+      }).then(response => {
+        const query = response.data;
+        this.prefixes = query.data.prefixes;
+        console.log(query.data);
+      });
+    },
+    getSufixes() {
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+          {
+            sufixes: items (type: "sufix") {
+              description
+            }
+          }
+        `
+        }
+      }).then(response => {
+        const query = response.data;
+        this.sufixes = query.data.sufixes;
+      });
     }
   },
   computed: {
@@ -89,7 +152,7 @@ export default {
       const domains = [];
       for (const prefix of this.prefixes) {
         for (const sufix of this.sufixes) {
-          const name = prefix + sufix;
+          const name = prefix.description + sufix.description;
           const url = name.toLowerCase();
           const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.com.br`;
           domains.push({
@@ -102,29 +165,8 @@ export default {
     }
   },
   created() {
-    axios({
-      url: "http://localhost:4000",
-      method: "post",
-      data: {
-        query: `
-          {
-            prefixes: items (type: "prefix") {
-              id
-              type
-              description
-            }
-            sufixes: items (type: "sufix") {
-              description
-            }
-          }
-        `
-      }
-    }).then(response => {
-      const query = response.data;
-      this.prefixes = query.data.prefixes.map(prefix => prefix.description);
-      this.sufixes = query.data.sufixes.map(sufix => sufix.description);
-      console.log(query.data);
-    });
+    this.getPrefixes();
+    this.getSufixes();
   }
 };
 </script>
