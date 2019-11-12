@@ -4,10 +4,20 @@
       <div class="container">
         <div class="row">
           <div class="col-md">
-            <AppItemList title="Prefixos" :items="prefixes" @addItem="addPrefix" @deleteItem="deletePrefix"/>
+            <AppItemList
+              title="Prefixos"
+              :items="prefixes"
+              @addItem="addPrefix"
+              @deleteItem="deletePrefix"
+            />
           </div>
           <div class="col-md">
-            <AppItemList title="Sufixos" :items="sufixes" @addItem="addSufix" @deleteItem="deleteSufix"/>
+            <AppItemList
+              title="Sufixos"
+              :items="sufixes"
+              @addItem="addSufix"
+              @deleteItem="deleteSufix"
+            />
           </div>
         </div>
         <br />
@@ -37,8 +47,7 @@
 </template>
 
 <script>
-import "bootstrap/dist/css/bootstrap.css";
-import "font-awesome/css/font-awesome.css";
+import axios from "axios/dist/axios";
 import AppItemList from "./AppItemList";
 
 export default {
@@ -48,8 +57,8 @@ export default {
   },
   data() {
     return {
-      prefixes: ["Air", "Jet", "Flight"],
-      sufixes: ["Hub", "Station", "Mart"]
+      prefixes: [],
+      sufixes: []
     };
   },
   methods: {
@@ -91,6 +100,31 @@ export default {
       }
       return domains;
     }
+  },
+  created() {
+    axios({
+      url: "http://localhost:4000",
+      method: "post",
+      data: {
+        query: `
+          {
+            prefixes: items (type: "prefix") {
+              id
+              type
+              description
+            }
+            sufixes: items (type: "sufix") {
+              description
+            }
+          }
+        `
+      }
+    }).then(response => {
+      const query = response.data;
+      this.prefixes = query.data.prefixes.map(prefix => prefix.description);
+      this.sufixes = query.data.sufixes.map(sufix => sufix.description);
+      console.log(query.data);
+    });
   }
 };
 </script>
