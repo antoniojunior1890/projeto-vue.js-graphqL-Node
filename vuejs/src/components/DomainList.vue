@@ -6,7 +6,7 @@
           <div class="col-md">
             <AppItemList
               title="Prefixos"
-              :items="prefixes"
+              :items="items.prefix"
               @addItem="addPrefix"
               @deleteItem="deletePrefix"
             />
@@ -14,7 +14,7 @@
           <div class="col-md">
             <AppItemList
               title="Sufixos"
-              :items="sufixes"
+              :items="items.sufix"
               @addItem="addSufix"
               @deleteItem="deleteSufix"
             />
@@ -57,8 +57,10 @@ export default {
   },
   data() {
     return {
-      prefixes: [],
-      sufixes: []
+      items: {
+        prefix: [],
+        sufix: []
+      }
     };
   },
   methods: {
@@ -86,7 +88,7 @@ export default {
       }).then(response => {
         const query = response.data;
         const newPrefix = query.data.newPrefix;
-        this.prefixes.push(newPrefix.description);
+        this.items.prefix.push(newPrefix);
       });
     },
     addSufix(sufix) {
@@ -115,49 +117,33 @@ export default {
           }
         }
       }).then(() => {
-        this.getPrefixes();
+        this.getItems("prefix");
       });
     },
     deleteSufix(sufix) {
       this.sufixes.splice(this.sufixes.indexOf(sufix), 1);
     },
-    getPrefixes() {
+    getItems(type) {
       axios({
         url: "http://localhost:4000",
         method: "post",
         data: {
           query: `
-          {
-            prefixes: items (type: "prefix") {
-              id
-              type
-              description
+            query ($type: String) {
+              items: items (type: $type) {
+                id
+                type
+                description
+              }
             }
+          `,
+          variables:{
+            type
           }
-        `
         }
       }).then(response => {
         const query = response.data;
-        this.prefixes = query.data.prefixes;
-        console.log(query.data);
-      });
-    },
-    getSufixes() {
-      axios({
-        url: "http://localhost:4000",
-        method: "post",
-        data: {
-          query: `
-          {
-            sufixes: items (type: "sufix") {
-              description
-            }
-          }
-        `
-        }
-      }).then(response => {
-        const query = response.data;
-        this.sufixes = query.data.sufixes;
+        this.items[type] = query.data.items;
       });
     }
   },
@@ -165,8 +151,8 @@ export default {
     domains() {
       console.log("gerando domains..");
       const domains = [];
-      for (const prefix of this.prefixes) {
-        for (const sufix of this.sufixes) {
+      for (const prefix of this.items.prefix) {
+        for (const sufix of this.items.sufix) {
           const name = prefix.description + sufix.description;
           const url = name.toLowerCase();
           const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.com.br`;
@@ -180,8 +166,8 @@ export default {
     }
   },
   created() {
-    this.getPrefixes();
-    this.getSufixes();
+    this.getItems("prefix");
+    this.getItems("sufix");
   }
 };
 </script>
