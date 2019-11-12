@@ -6,17 +6,19 @@
           <div class="col-md">
             <AppItemList
               title="Prefixos"
+              type="prefix"
               :items="items.prefix"
-              @addItem="addPrefix"
+              @addItem="addItem"
               @deleteItem="deletePrefix"
             />
           </div>
           <div class="col-md">
             <AppItemList
               title="Sufixos"
-              :items="items.sufix"
-              @addItem="addSufix"
-              @deleteItem="deleteSufix"
+              type="suffix"
+              :items="items.suffix"
+              @addItem="addItem"
+              @deleteItem="deleteSuffix"
             />
           </div>
         </div>
@@ -59,19 +61,19 @@ export default {
     return {
       items: {
         prefix: [],
-        sufix: []
+        suffix: []
       }
     };
   },
   methods: {
-    addPrefix(prefix) {
+    addItem(item) {
       axios({
         url: "http://localhost:4000",
         method: "post",
         data: {
           query: `
             mutation ($item: ItemInput) {
-              newPrefix: saveItem(item: $item) {
+              newItem: saveItem(item: $item) {
                 id
                 type
                 description
@@ -79,26 +81,23 @@ export default {
             }
           `,
           variables: {
-            item: {
-              type: "prefix",
-              description: prefix
-            }
+            item
           }
         }
       }).then(response => {
         const query = response.data;
-        const newPrefix = query.data.newPrefix;
-        this.items.prefix.push(newPrefix);
+        const newItem = query.data.newItem;
+        this.items[item.type].push(newItem);
       });
     },
-    addSufix(sufix) {
-      this.sufixes.push(sufix);
+    addSuffix(suffix) {
+      this.suffixes.push(suffix);
     },
     generate() {
       this.domains = [];
       for (const prefix of this.prefixes) {
-        for (const sufix of this.sufixes) {
-          this.domains.push(prefix + sufix);
+        for (const suffix of this.suffixes) {
+          this.domains.push(prefix + suffix);
         }
       }
     },
@@ -120,8 +119,8 @@ export default {
         this.getItems("prefix");
       });
     },
-    deleteSufix(sufix) {
-      this.sufixes.splice(this.sufixes.indexOf(sufix), 1);
+    deleteSuffix(suffix) {
+      this.suffixes.splice(this.suffixes.indexOf(suffix), 1);
     },
     getItems(type) {
       axios({
@@ -152,8 +151,8 @@ export default {
       console.log("gerando domains..");
       const domains = [];
       for (const prefix of this.items.prefix) {
-        for (const sufix of this.items.sufix) {
-          const name = prefix.description + sufix.description;
+        for (const suffix of this.items.suffix) {
+          const name = prefix.description + suffix.description;
           const url = name.toLowerCase();
           const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.com.br`;
           domains.push({
@@ -167,7 +166,7 @@ export default {
   },
   created() {
     this.getItems("prefix");
-    this.getItems("sufix");
+    this.getItems("suffix");
   }
 };
 </script>
